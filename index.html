@@ -251,6 +251,9 @@ p{word-break:break-word}
 .acc:hover:not(.active){background:var(--bg-surface)}
 .acc:focus-visible{outline:2px solid var(--brand-500);outline-offset:-2px}
 .acc.active{background:var(--brand-50)}
+.acc.has-chip{height:56px}
+.ws-role-row{display:flex;align-items:center;gap:4px}
+.role-chip{background:var(--bg-subtle);border-radius:4px;padding:4px 8px;font:500 10px/15px var(--inter);letter-spacing:-.2px;color:var(--text-subtle);white-space:nowrap}
 .acc .radio{width:24px;height:24px;flex-shrink:0;display:grid;place-items:center}
 .acc .radio img{width:24px;height:24px}
 .acc.active .radio img{width:18px;height:18px}
@@ -395,7 +398,7 @@ const WORKSPACES = {
     ],
   },
   ypf: {
-    id:'ypf', name:'YPF', role:'Colaborador', img:asset('logo-ypf.png'),
+    id:'ypf', name:'YPF', role:'Colaborador', menuType:'Integración', img:asset('logo-ypf.png'),
     email:'Elena@ypf.com', headerAvatar:asset('logo-ypf.png'), bell:false, selectorRadius:'sm',
     nav:[
       {label:'Firmas', icon:'ypf-ic-firmas-active.svg', active:true},
@@ -697,9 +700,11 @@ function ypfSkeletonHTML(){
 function accountsHTML(){
   return ORDER.map(id=>{
     const ws = WORKSPACES[id], on = id===current;
-    return `<div class="acc${on?' active':''}" role="menuitemradio" aria-checked="${on}" tabindex="0" data-ws="${id}">
+    return `<div class="acc${on?' active':''}${ws.menuType?' has-chip':''}" role="menuitemradio" aria-checked="${on}" tabindex="0" data-ws="${id}">
       <div class="team-img"><img src="${ws.img}" alt=""></div>
-      <div class="ws-text"><span class="ws-name">${esc(ws.name)}</span><span class="ws-role">${esc(ws.role)}</span></div>
+      <div class="ws-text"><span class="ws-name">${esc(ws.name)}</span>${ws.menuType
+        ? `<span class="ws-role-row"><span class="ws-role">${esc(ws.menuType)}</span><span class="role-chip">${esc(ws.role)}</span></span>`
+        : `<span class="ws-role">${esc(ws.role)}</span>`}</div>
       <div class="radio"><img src="${asset(on?'radio-on.svg':'radio-off.svg')}" alt=""></div>
     </div>`;
   }).join('');
