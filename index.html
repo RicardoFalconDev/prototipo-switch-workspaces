@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FID · Cambio de espacio de trabajo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- Tokens (valores de Figma) ---------- */
+:root{
+  --bg-default:#fff;
+  --bg-surface:#f8f9fa;
+  --bg-subtle:#f1f3f5;
+  --bg-subtle-light:#f8f9fa;
+  --bg-inputs:#f8f9fa;
+  --stroke:#dee2e6;
+  --text-default:#0b0c0e;
+  --text-subtle:#495057;
+  --text-subtle-light:#6c757d;
+  --text-placeholder:#adb5bd;
+  --gray-900:#333;
+  --gray-800:#454545;
+  --gray-700:#4f4f4f;
+  --gray-200:#d1d1d1;
+  --gray-100:#e7e7e7;
+  --neutral80:#cacaca;
+  --blue-50:#edf4ff;
+  --blue-100:#deecff;
+  --blue-200:#c3daff;
+  --blue-300:#9fc0ff;
+  --blue-600:#3a4ef1;
+  --blue-700:#2a3ad0;
+  --brand-20:#f5f6fe;
+  --brand-30:#f2f3fe;
+  --brand-50:#edeffd;
+  --brand-100:#c7ccfa;
+  --brand-500:#2a39d0;
+  --purple-100:#ebeafd;
+  --purple-200:#d9d8fc;
+  --purple-400:#9c90f5;
+  --purple-700:#5930d1;
+  --error-alert:#d74141;
+  --error-bg:#fdeaea; --error-text:#b62424;
+  --success-bg:#e6f9ed; --success-text:#1e824c;
+  --warning-bg:#fff9e6; --warning-text:#a37200;
+  --shadow-8dp:0 119px 33px 0 rgba(72,70,82,0),0 76px 31px 0 rgba(72,70,82,.01),0 43px 26px 0 rgba(72,70,82,.04),0 19px 19px 0 rgba(72,70,82,.07),0 5px 10px 0 rgba(72,70,82,.08),0 0 0 0 rgba(72,70,82,.08);
+  --shadow-elev1:0 4px 25px rgba(33,33,33,.08),0 4px 3px rgba(33,33,33,.04);
+  --shadow-sm:0 1px 2px rgba(12,12,13,.05);
+  --inter:'Inter',system-ui,sans-serif;
+  --open:'Open Sans',system-ui,sans-serif;
+  --switch-ms:1600ms;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg-surface)}
+body{font-family:var(--inter);color:var(--text-default);-webkit-font-smoothing:antialiased}
+img{display:block}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+p{word-break:break-word}
+
+/* ---------- Stage ---------- */
+#app{position:relative;width:1440px;min-height:1095px;display:flex;align-items:stretch;background:var(--bg-surface);margin:0 auto}
+
+/* ---------- Sidebar ---------- */
+.sidebar{width:240px;flex-shrink:0;display:flex;flex-direction:column}
+.sb-header{height:80px;background:#fff;border-bottom:1px solid var(--stroke);border-right:1px solid var(--stroke);padding:16px 24px 8px;display:flex;align-items:center}
+.sb-header .logo-wrap{flex:1;background:#fff;border-radius:8px;padding:12px 16px}
+.fid-logo{position:relative;width:45.867px;height:32px;overflow:hidden}
+.fid-logo img{position:absolute}
+.sb-content{flex:1;background:#fff;border-right:1px solid var(--stroke);padding:24px;display:flex;flex-direction:column;align-items:center;gap:24px;overflow:hidden}
+
+.team-selector{width:192px;display:flex;align-items:center;gap:4px;padding:8px;background:var(--bg-subtle-light);border:1px solid var(--stroke);border-radius:8px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.team-selector.r-sm{border-radius:4px}
+.team-selector:hover{border-color:#c5ccd3}
+.team-selector:focus-visible{outline:2px solid var(--brand-500);outline-offset:2px}
+.team-selector .ts-content{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+.team-img{width:32px;height:32px;flex-shrink:0;border:1px solid var(--stroke);border-radius:4px;overflow:hidden}
+.team-img img{width:100%;height:100%;object-fit:cover}
+.ws-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.ws-name{font:500 14px/1.6 var(--inter);letter-spacing:-.28px;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-role{font:400 12px/1.5 var(--inter);letter-spacing:-.24px;color:var(--text-subtle-light);white-space:nowrap}
+.ts-caret{width:16px;height:16px;flex-shrink:0;display:grid;place-items:center}
+
+.nav{width:192px;display:flex;flex-direction:column;gap:4px}
+.menu-item{width:192px;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:#fff;cursor:pointer}
+.menu-item:hover:not(.active){background:var(--bg-surface)}
+.menu-item .mi-content{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+.menu-item img{width:24px;height:24px;flex-shrink:0}
+.menu-item p{flex:1;font:400 14px/20px var(--open);letter-spacing:.1px;color:var(--gray-900)}
+.menu-item.active{background:var(--blue-50)}
+.menu-item.active p{font-weight:600;color:var(--blue-700)}
+.submenu{display:flex;flex-direction:column;gap:4px}
+.submenu-item{width:192px;height:30px;display:flex;align-items:center;gap:8px;padding:4px 12px 4px 32px;border-radius:8px;background:#fff;cursor:pointer}
+.submenu-item:hover{background:var(--bg-surface)}
+.submenu-item img{width:8px;height:8px}
+.submenu-item p{width:122px;font:400 14px/1.6 var(--open);letter-spacing:-.28px;color:var(--text-subtle)}
+
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.header-app{height:80px;background:#fff;border-bottom:1px solid var(--stroke);padding:16px 24px;display:flex;align-items:center;justify-content:flex-end;position:relative}
+.nav-bar{display:flex;align-items:center;gap:20px}
+.btn-icon{position:relative;background:#fff;border-radius:8px;padding:12px;display:flex}
+.btn-icon img{width:24px;height:24px}
+.badge-dot{position:absolute;left:27px;top:25px;width:8px;height:8px;border-radius:999px;background:var(--error-alert);border:1px solid #fff}
+.v-divider{width:1px;height:38.5px;background:var(--stroke)}
+.user{display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:8px}
+.user:focus-visible{outline:2px solid var(--brand-500);outline-offset:4px}
+.user .u-info{display:flex;align-items:center;gap:8px}
+.avatar32{width:32px;height:32px;border:1px solid var(--stroke);border-radius:999px;overflow:hidden;flex-shrink:0}
+.avatar32 img{width:100%;height:100%;object-fit:cover}
+.u-name{font:600 14px/1.5 var(--inter);letter-spacing:-.28px;color:var(--text-default);white-space:nowrap}
+.u-mail{font:400 12px/1.5 var(--inter);letter-spacing:-.24px;color:var(--text-subtle-light);white-space:nowrap}
+.caret-btn{background:#fff;border:1px solid var(--stroke);border-radius:24px;padding:4px;display:flex}
+.caret-btn img{width:14px;height:14px;transition:transform .2s}
+.user[aria-expanded="true"] .caret-btn img{transform:rotate(180deg)}
+
+.feed{background:var(--bg-surface);padding:24px;display:flex;flex-direction:column;gap:16px;flex:1}
+
+/* ---------- Comunes ---------- */
+.card{background:#fff;border:1px solid var(--stroke);border-radius:12px;padding:16px;overflow:hidden}
+.btn-pill{background:#fff;border:1px solid var(--stroke);border-radius:999px;padding:8px 12px;box-shadow:var(--shadow-sm);font:500 12px/1.5 var(--inter);letter-spacing:-.24px;color:var(--text-default);white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
+.btn-pill:hover{background:var(--bg-surface)}
+
+/* ---------- Personal: dashboard ---------- */
+.dash-row{display:flex;gap:24px;align-items:flex-start;width:100%}
+.dash-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;align-self:stretch}
+.dash-top{display:flex;gap:16px;align-items:stretch;width:100%}
+.sign-card{width:374px;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
+.sign-card .inner{display:flex;flex-direction:column;align-items:center;gap:24px}
+.sign-card .head{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;text-align:center}
+.sign-card .head img{width:32px;height:32px}
+.t-bold16{font:700 16px/24px var(--open);color:var(--gray-900)}
+.t-reg14{font:400 14px/20px var(--open);letter-spacing:.1px;color:var(--gray-700)}
+.btn-primary{width:312px;height:43px;border-radius:50px;background:var(--blue-700);color:#fff;font:600 16px/24px var(--open);display:flex;align-items:center;justify-content:center;padding:8px 25px}
+.btn-primary:hover{background:#2331b3}
+.quick-grid{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+.quick-row{flex:1;display:flex;gap:16px;align-items:center}
+.quick{flex:1;min-width:0;height:100%;display:flex;align-items:center;padding:16px;border-radius:12px;background:#fff;border:1px solid #eae9ee;box-shadow:var(--shadow-elev1);cursor:pointer}
+.quick.empty{background:transparent;border-color:transparent;box-shadow:none;cursor:default}
+.quick .q{display:flex;align-items:center;gap:8px}
+.quick img{width:24px;height:24px;flex-shrink:0}
+.quick p{font:600 12px/16px var(--open);letter-spacing:.1px;color:var(--gray-900)}
+
+.hist{display:flex;flex-direction:column;gap:12px;width:100%}
+.card-head{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;width:100%}
+.card-head .ch-text{flex:1;min-width:250px;display:flex;flex-direction:column;gap:4px;line-height:1.5}
+.ch-title{font:600 16px/1.5 var(--inter);letter-spacing:-.32px;color:var(--text-default)}
+.ch-sub{font:500 12px/1.5 var(--inter);letter-spacing:-.24px;color:var(--text-subtle-light)}
+.tbl{border:1px solid var(--stroke);border-radius:8px;overflow:hidden;width:100%}
+.tbl-row{display:grid;border-bottom:1px solid var(--stroke);background:#fff}
+.tbl-row.th{background:var(--bg-subtle)}
+.tbl-row.th > div{padding:16px;font:400 12px/16px var(--open);letter-spacing:.1px;color:var(--text-subtle);white-space:nowrap}
+.tbl-row.td > div{height:53px;padding:16px;display:flex;align-items:center;gap:12px;min-width:0;font:400 14px/20px var(--open);letter-spacing:.1px;color:var(--text-subtle);white-space:nowrap}
+.tbl-row.td > div > span.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.hist .tbl-row{grid-template-columns:206px 170px minmax(0,1fr)}
+.hist .tbl-row.td > div:nth-child(3){gap:4px}
+.chip{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:32px;font:500 10px/1.5 var(--inter);letter-spacing:-.2px;white-space:nowrap;max-width:100%;overflow:hidden}
+.chip span{overflow:hidden;text-overflow:ellipsis}
+.chip.fill{flex:1;justify-content:flex-start}
+.chip.blue{background:var(--blue-100);color:var(--blue-700)}
+.chip.purple{background:var(--purple-100);color:var(--purple-700)}
+
+.col3{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:24px}
+.firmas-disp{height:187px;padding:1px;border:1px solid var(--stroke);border-radius:12px;background:#fff;overflow:hidden}
+.firmas-disp .bg{padding:20px 16px}
+.firmas-disp .stack{height:145px;display:flex;flex-direction:column;justify-content:space-between}
+.title-row{display:flex;align-items:center;gap:10px;height:24px}
+.title-row img{width:24px;height:24px}
+.title-row p{flex:1;font:700 16px/24px var(--open);color:var(--text-default)}
+.progress-box{margin-top:12px;background:var(--brand-30);border:1px solid var(--brand-30);border-radius:12px;padding:16px}
+.progress-box .pb{height:43px;overflow:hidden;padding:4px 0 16px;display:flex;flex-direction:column;gap:8px}
+.bar{height:8px;flex-shrink:0;border-radius:8px;background:#e2e5ef;overflow:hidden;position:relative}
+.bar i{position:absolute;left:0;top:0;height:8px;width:135px;border-radius:8px;background:var(--brand-500)}
+.bar-label{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:4px;color:#0c0c0c;white-space:nowrap}
+.bar-label b{font:700 16px/24px var(--open)}
+.bar-label span{font:400 14px/20px var(--open);letter-spacing:.1px}
+.fd-foot{display:flex;justify-content:space-between;font:400 12px/16px var(--open);letter-spacing:.1px;color:var(--text-default)}
+.fd-foot a{font-weight:600;text-decoration:underline;color:inherit;cursor:pointer}
+.mis-cert{border-color:var(--gray-100);display:flex;flex-direction:column;gap:12px}
+.mis-cert .mc-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mis-cert .mc-head .title-row{flex:1;min-width:0}
+.mis-cert .mc-head .title-row p{color:var(--gray-900)}
+.cert{border:1px solid var(--gray-100);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.pill{padding:4px 8px;border-radius:16px;font:500 12px/16px var(--inter);letter-spacing:.1px;font-feature-settings:"lnum" 1,"tnum" 1;white-space:nowrap}
+.pill.blue{background:var(--blue-200);border:1px solid var(--blue-300);color:var(--blue-600)}
+.pill.purple{background:var(--purple-200);border:1px solid var(--purple-400);color:var(--purple-700)}
+.cert hr{width:100%;height:1px;border:0;background:var(--blue-200);opacity:.5}
+.kv{width:100%;display:flex;flex-direction:column;gap:4px;font:400 12px/16px var(--open);letter-spacing:.1px;color:var(--gray-800)}
+.kv > div{display:flex;justify-content:space-between;gap:24px}
+.kv > div > span:first-child{white-space:nowrap}
+.kv > div > span:last-child{text-align:right}
+
+/* ---------- YPF: firmas ---------- */
+.page-head{display:flex;align-items:flex-start;width:100%}
+.page-head h1{flex:1;font:600 28px/36px var(--inter);color:var(--text-default)}
+.input-box{height:44px;display:flex;align-items:center;gap:8px;padding:12px 16px;border:1px solid var(--stroke);border-radius:8px;background:var(--bg-inputs);white-space:nowrap;cursor:pointer}
+.input-box img{width:24px;height:24px}
+.input-box p{font:500 14px/1.5 var(--inter);letter-spacing:-.07px;color:var(--text-subtle-light)}
+.input-box.white{background:#fff}
+.input-box.white p{color:var(--text-default)}
+.firmas-card{width:100%;display:flex;flex-direction:column;align-items:center;gap:24px}
+.firmas-card .fc-body{width:100%;display:flex;flex-direction:column;gap:24px}
+.filters{display:flex;justify-content:space-between;align-items:flex-start}
+.search{width:374px;display:flex;align-items:center;gap:8px;padding:12px 16px;border:1px solid var(--stroke);border-radius:8px;background:var(--bg-inputs)}
+.search img{width:20px;height:20px}
+.search p{font:400 14px/1.6 var(--inter);letter-spacing:-.28px;color:var(--text-placeholder)}
+.filters .right{display:flex;gap:8px;align-items:center}
+.tbl-scroll{margin-right:-17px;overflow-x:auto;scrollbar-width:none}
+.tbl-scroll::-webkit-scrollbar{display:none}
+.ypf-tbl{width:1254px;border:1px solid var(--stroke);border-right:0;border-radius:8px 0 0 8px;overflow:hidden}
+.tbl > .tbl-row:last-child{border-bottom:0}
+.ypf-tbl > .tbl-row:last-child,.hist .tbl > .tbl-row:last-child{border-bottom:1px solid var(--stroke)}
+.ypf-tbl .tbl-row{grid-template-columns:104px 245px 153px 160px 139px 131px 144px 178px}
+.ypf-tbl .tbl-row.td > div{height:61px}
+.ypf-tbl .tbl-row.th > div:nth-child(7){padding-left:33px}
+.ypf-tbl .tbl-row.th > div:nth-child(8){padding-left:80px}
+.ypf-tbl .tbl-row.td > div:nth-child(7),.ypf-tbl .tbl-row.td > div:nth-child(8){justify-content:center}
+.status{padding:4px 16px;border-radius:32px;font:500 14px/1.5 var(--inter);letter-spacing:-.28px;white-space:nowrap}
+.status.error{background:var(--error-bg);color:var(--error-text)}
+.status.ok{background:var(--success-bg);color:var(--success-text)}
+.status.warn{background:var(--warning-bg);color:var(--warning-text)}
+.hscroll{height:6px;border-radius:8px;background:#e0e0e0;overflow:hidden;position:relative;width:100%}
+.hscroll i{position:absolute;left:0;top:0;height:6px;width:55px;border-radius:8px;background:#c8ccdd}
+.pagination{width:574px;display:flex;align-items:center;gap:31px}
+.pagination .count{flex:1;white-space:nowrap;text-align:center;font:500 14px/1.6 var(--inter);letter-spacing:-.28px;color:var(--text-subtle)}
+.pg{display:flex;gap:12px;align-items:center}
+.pg .grp{display:flex;gap:4px;align-items:center}
+.pg-btn{height:33px;display:flex;align-items:center;justify-content:center;border:1px solid var(--stroke);border-radius:4px;background:#fff;padding:8px;font:500 14px/1.6 var(--inter);letter-spacing:-.28px;color:var(--text-default)}
+.pg-btn.num{padding:8px 12px}
+.pg-btn.dots{border-color:transparent;background:transparent;font-weight:600;padding:8px 12px}
+.pg-btn img{width:16px;height:16px}
+
+/* ---------- Menús ---------- */
+.menu{position:absolute;z-index:30;width:312px;background:#fff;border:1px solid #c5ccd3;box-shadow:var(--shadow-8dp);overflow:hidden;display:flex;flex-direction:column;opacity:0;transform:translateY(-4px) scale(.98);transform-origin:top left;pointer-events:none;transition:opacity .14s ease,transform .14s ease}
+.menu.open{opacity:1;transform:none;pointer-events:auto}
+#wsMenu{left:222px;top:104px;border-radius:8px}
+#userMenu{right:20px;top:84px;border-radius:16px;transform-origin:top right}
+.m-div-50{height:1px;width:100%;background:var(--gray-200);opacity:.5;flex-shrink:0}
+.m-div{height:1px;width:100%;background:var(--neutral80);flex-shrink:0}
+.m-section{display:flex;flex-direction:column;gap:8px;padding:16px}
+.m-title{font:500 14px/normal var(--inter);color:var(--text-default);white-space:nowrap}
+.m-over{font:600 11px/normal var(--inter);color:var(--text-subtle-light);text-transform:uppercase;white-space:nowrap}
+.acc-list{display:flex;flex-direction:column;gap:16px;padding:8px 0;width:100%}
+#userMenu .acc-list{padding:0}
+.acc{width:100%;display:flex;align-items:center;gap:8px;padding:8px 16px 8px 8px;border-radius:8px;cursor:pointer;transition:background .12s}
+.acc:hover:not(.active){background:var(--bg-surface)}
+.acc:focus-visible{outline:2px solid var(--brand-500);outline-offset:-2px}
+.acc.active{background:var(--brand-50)}
+.acc .radio{width:24px;height:24px;flex-shrink:0;display:grid;place-items:center}
+.acc .radio img{width:24px;height:24px}
+.acc.active .radio img{width:18px;height:18px}
+.um-top{background:var(--brand-20);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.avatar56{width:56px;height:56px;border-radius:999px;background:var(--brand-100);border:1.5px solid var(--stroke);display:grid;place-items:center;font:600 24px/1.33 var(--inter);letter-spacing:-.48px;color:var(--brand-500)}
+.um-name{font:600 16px/1.5 var(--inter);letter-spacing:-.32px;color:var(--text-default)}
+.um-section{display:flex;flex-direction:column;gap:12px;padding:16px}
+.um-foot{background:#fff;padding:16px}
+.btn-outline{width:100%;height:40px;border:1px solid var(--brand-500);border-radius:20px;display:flex;align-items:center;justify-content:center;font:500 14px/18px var(--inter);color:var(--brand-500);font-feature-settings:"lnum" 1,"tnum" 1}
+.btn-outline:hover{background:var(--brand-20)}
+
+/* ---------- Transición de cambio de espacio ---------- */
+.swap{transition:opacity .22s ease}
+.swap.fade-out{opacity:0}
+.swap.fade-in{animation:fadeIn .32s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.sk{position:relative;overflow:hidden;background:var(--bg-subtle);border-radius:6px}
+.sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:shimmer 1.2s infinite}
+@keyframes shimmer{to{transform:translateX(100%)}}
+.sk-item{width:192px;display:flex;align-items:center;gap:8px;padding:8px 12px;height:40px}
+.sk-line{height:10px;border-radius:999px}
+.sk-row{display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--stroke);background:#fff}
+.sk-row:last-child{border-bottom:0}
+
+.ts-spinner,.spinner{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.team-selector.loading{cursor:progress;border-color:var(--brand-100);box-shadow:0 0 0 3px var(--brand-50)}
+
+.top-progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--brand-500);opacity:0;z-index:5}
+.top-progress.run{opacity:1;animation:progress var(--switch-ms) cubic-bezier(.2,.7,.3,1) forwards}
+.top-progress.done{opacity:0;width:100%;transition:opacity .3s .1s}
+@keyframes progress{0%{width:0}100%{width:88%}}
+
+.loading-toast{position:absolute;z-index:20;left:50%;top:320px;transform:translate(-50%,8px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:12px;padding:16px 20px;background:#fff;border:1px solid var(--stroke);border-radius:12px;box-shadow:var(--shadow-8dp);transition:opacity .2s ease,transform .2s ease}
+.loading-toast.show{opacity:1;transform:translate(-50%,0)}
+.loading-toast .lt-team{width:32px;height:32px;border:1px solid var(--stroke);border-radius:4px;overflow:hidden;flex-shrink:0}
+.loading-toast .lt-team img{width:100%;height:100%;object-fit:cover}
+.lt-title{font:600 14px/1.5 var(--inter);letter-spacing:-.28px;color:var(--text-default);white-space:nowrap}
+.lt-sub{font:400 12px/1.5 var(--inter);letter-spacing:-.24px;color:var(--text-subtle-light);white-space:nowrap}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){
+  .sk::after,.ts-spinner,.spinner{animation-duration:2.4s}
+  .swap.fade-in{animation:none}
+  .menu{transition:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-header">
+      <div class="logo-wrap">
+        <div class="fid-logo" aria-label="FID by Lakaut" role="img">
+          <img class="g1" src="assets/fid-g1.svg" alt="" style="position:absolute;inset:0 0 35.64% 0;width:100%;height:64.36%">
+          <img class="g2" src="assets/fid-g2.svg" alt="" style="position:absolute;left:0;top:80.22%;width:16.7%;height:19.78%">
+          <img class="g3" src="assets/fid-g3.svg" alt="" style="position:absolute;left:0;top:0;width:98.73%;height:96.61%">
+        </div>
+      </div>
+    </div>
+    <div class="sb-content">
+      <button class="team-selector" id="teamSelector" aria-haspopup="menu" aria-expanded="false" aria-controls="wsMenu"></button>
+      <nav class="nav swap" id="nav" aria-label="Menú principal"></nav>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="header-app" id="headerApp">
+      <div class="nav-bar swap" id="navBar"></div>
+      <div class="top-progress" id="topProgress"></div>
+    </header>
+    <div class="feed swap" id="feed"></div>
+    <div class="loading-toast" id="loadingToast" role="status" aria-live="polite"></div>
+    <div class="menu" id="userMenu" role="menu" aria-label="Menú de usuario"></div>
+  </main>
+
+  <!-- Menú cambiar espacio (sidebar) -->
+  <div class="menu" id="wsMenu" role="menu" aria-label="Cambiar espacio de trabajo"></div>
+</div>
+
+<script>
+const ASSETS = window.__ASSETS__ || {};
+const asset = name => ASSETS[name] || 'assets/'+name;
+const WORKSPACES = {
+  personal: {
+    id:'personal', name:'Elena Fisher', role:'Cuenta personal', img:asset('avatar-elena.png'),
+    email:'Elena@odinds.com', headerAvatar:asset('avatar-elena.png'), bell:false, selectorRadius:'md',
+    nav:[
+      {label:'Inicio', icon:'ic-inicio-active.svg', active:true},
+      {label:'Certificados', icon:'ic-certificados.svg'},
+      {label:'Documentos', icon:'ic-document.svg', chevron:true, sub:['Enviados','Recibidos']},
+      {label:'Firmar documentos ', icon:'ic-firma.svg'},
+      {label:'Historial', icon:'ic-historial.svg'},
+      {label:'Perfil', icon:'ic-perfil.svg'},
+      {label:'Gestionar Plan', icon:'ic-plan.svg'},
+      {label:'Ayuda', icon:'ic-ayuda.svg'},
+    ],
+  },
+  ypf: {
+    id:'ypf', name:'YPF', role:'Colaborador', img:asset('logo-ypf.png'),
+    email:'Elena@ypf.com', headerAvatar:asset('logo-ypf.png'), bell:false, selectorRadius:'sm',
+    nav:[
+      {label:'Firmas', icon:'ypf-ic-firmas-active.svg', active:true},
+      {label:'Certificados', icon:'ic-certificados.svg'},
+      {label:'Equipo', icon:'ypf-ic-group.svg'},
+      {label:'Actividad', icon:'ypf-ic-history.svg'},
+      {label:'Configuraciones', icon:'ypf-ic-config.svg'},
+      {label:'Ayuda', icon:'ic-ayuda.svg'},
+    ],
+  },
+};
+const ORDER = ['personal','ypf'];
+let current = 'personal';
+let switching = false;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Render: sidebar ---------- */
+function teamSelectorHTML(ws, loading){
+  return `<span class="ts-content">
+      <span class="team-img"><img src="${ws.img}" alt=""></span>
+      <span class="ws-text"><span class="ws-name">${esc(ws.name)}</span><span class="ws-role">${esc(ws.role)}</span></span>
+    </span>
+    <span class="ts-caret">${loading ? spinnerSVG(16) : `<img src="${asset('caret-up-down.svg')}" alt="" width="16" height="16">`}</span>`;
+}
+function navHTML(ws){
+  return ws.nav.map(it => {
+    const item = `<div class="menu-item${it.active?' active':''}" ${it.active?'aria-current="page"':''}>
+        <div class="mi-content"><img src="${asset(it.icon)}" alt=""><p>${esc(it.label)}</p></div>
+        ${it.chevron?`<img src="${asset('ic-chevron-up.svg')}" alt="">`:''}
+      </div>`;
+    const sub = it.sub ? `<div class="submenu">${it.sub.map(s=>`<div class="submenu-item"><img src="${asset('ic-dot.svg')}" alt=""><p>${s}</p></div>`).join('')}</div>` : '';
+    return item + sub;
+  }).join('');
+}
+function navSkeletonHTML(ws){
+  const widths=[64,92,80,120,70,56,104,52];
+  let n = ws.nav.reduce((a,it)=>a+1+(it.sub?it.sub.length:0),0);
+  let out='';
+  for(let i=0;i<n;i++){
+    const w = widths[i%widths.length];
+    out += `<div class="sk-item"><div class="sk" style="width:24px;height:24px;border-radius:6px"></div><div class="sk sk-line" style="width:${w}px"></div></div>`;
+  }
+  return out;
+}
+
+/* ---------- Render: header ---------- */
+function navBarHTML(ws){
+  const bell = ws.bell ? `<div style="display:flex;gap:4px;align-items:center">
+        <button class="btn-icon" aria-label="Notificaciones"><img src="${asset('bell.svg')}" alt=""><span class="badge-dot"></span></button>
+      </div><div class="v-divider"></div>` : '';
+  return `${bell}
+    <div class="user" id="userBtn" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false" aria-controls="userMenu">
+      <div class="u-info">
+        <div class="avatar32"><img src="${ws.headerAvatar}" alt=""></div>
+        <div><p class="u-name">Elena Fisher</p><p class="u-mail">${esc(ws.email)}</p></div>
+      </div>
+      <div class="caret-btn"><img src="${asset('caret-down.svg')}" alt=""></div>
+    </div>`;
+}
+function navBarSkeletonHTML(ws){
+  const bell = ws.bell ? `<div class="sk" style="width:48px;height:48px;border-radius:8px"></div><div class="v-divider"></div>` : '';
+  return `${bell}<div style="display:flex;align-items:center;gap:8px">
+      <div class="sk" style="width:32px;height:32px;border-radius:999px"></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div class="sk sk-line" style="width:84px"></div><div class="sk sk-line" style="width:110px;height:8px"></div></div>
+      <div class="sk" style="width:24px;height:24px;border-radius:999px;margin-left:4px"></div>
+    </div>`;
+}
+
+/* ---------- Render: contenido ---------- */
+const HIST = [
+  ['Contrato de Alquiler','17/03/26 · 14:32',['blue','Persona Física ',false],'#4f4f4f'],
+  ['Acuerdo de Confidencialidad','17/03/26 · 13:58',['purple','Cervecería y Maltería Quilmes Sociedad Anónima Industrial Comercial Agrícola y Ganadera',true]],
+  ['Factura de Servicios','16/03/26 · 18:21',['purple','Coto Centro Integral de Comercialización Sociedad Anónima',false]],
+  ['Contrato de Prestación de Servicios','12/03/26 · 16:45',['purple','Importadora y Exportadora de la Patagonia Sociedad Anónima',false]],
+  ['Acta de Asamblea','10/03/26 · 09:12',['purple','Empresa Distribuidora y Comercializadora Norte Sociedad Anónima (Edenor)',true]],
+  ['Contratación de Personal','10/03/26 · 03:12',['purple','Empresa Distribuidora Sur Sociedad Anónima (Edesur)',false]],
+  ['Poder Mauricio Fernández','10/03/26 · 03:12',['purple','Pan American Energy SL Sucursal Argentina',false]],
+];
+function personalHTML(){
+  const rows = HIST.map(([doc,date,[c,label,fill],dateColor])=>`<div class="tbl-row td">
+      <div><span class="ell">${doc}</span></div>
+      <div${dateColor?` style="color:${dateColor}"`:''}>${date}</div>
+      <div><span class="chip ${c}${fill?' fill':''}"><span>${label}</span></span></div>
+    </div>`).join('');
+  return `<div class="dash-row">
+    <div class="dash-left">
+      <div class="dash-top">
+        <div class="card sign-card">
+          <div class="inner">
+            <div class="head">
+              <img src="${asset('ic-firma-doc.svg')}" alt="">
+              <div style="display:flex;flex-direction:column;gap:4px;width:100%">
+                <p class="t-bold16">Firmá un documento</p>
+                <p class="t-reg14">Subí un documento y aplica tu firma digital</p>
+              </div>
+            </div>
+            <button class="btn-primary">Firmar documento</button>
+          </div>
+        </div>
+        <div class="quick-grid">
+          <div class="quick-row">
+            <div class="quick"><div class="q"><img src="${asset('ic-consulta.svg')}" alt=""><p style="width:135px">Consulta pública certificados emitidos</p></div></div>
+            <div class="quick"><div class="q" style="flex:1"><img src="${asset('ic-problem.svg')}" alt=""><p style="width:140px">Consulta pública certificados revocados</p></div></div>
+          </div>
+          <div class="quick-row">
+            <div class="quick"><div class="q"><img src="${asset('ic-article-person.svg')}" alt=""><p style="width:135px">Generar nuevo certificado</p></div></div>
+            <div class="quick empty"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card hist">
+        <div class="card-head">
+          <div class="ch-text"><p class="ch-title">Historial de firmas</p><p class="ch-sub">Últimos 30 días</p></div>
+          <button class="btn-pill">Mostrar todos</button>
+        </div>
+        <div class="tbl" style="min-width:480px">
+          <div class="tbl-row th"><div>Nombre del documento</div><div>Fecha y hora de firma</div><div>Certificado</div></div>
+          ${rows}
+        </div>
+      </div>
+    </div>
+    <div class="col3">
+      <div class="firmas-disp"><div class="bg"><div class="stack">
+        <div>
+          <div class="title-row" style="width:210px"><img src="${asset('ic-signature.svg')}" alt=""><p>Firmas disponibles</p></div>
+          <div class="progress-box"><div class="pb">
+            <div class="bar" style="background:#e2e5ef"><i></i></div>
+            <div class="bar-label"><b>10</b><span>firmas digitales</span></div>
+          </div></div>
+        </div>
+        <div class="fd-foot"><span>¿Necesitas más firmas?</span><a>Comprar firmas</a></div>
+      </div></div></div>
+      <div class="card mis-cert">
+        <div class="mc-head">
+          <div class="title-row"><img src="${asset('ic-mis-cert.svg')}" alt=""><p>Mis certificados</p></div>
+          <button class="btn-pill">Mostrar todos</button>
+        </div>
+        <div class="cert">
+          <span class="pill blue">Persona Física</span>
+          <hr>
+          <div class="kv">
+            <div><span>Nombre</span><span>María Perez</span></div>
+            <div><span>CUIL</span><span>78-6545454545-8</span></div>
+            <div><span>Nro de serie</span><span>3244geghth67787</span></div>
+            <div><span>Fecha de Vencimiento</span><span style="width:92px">06/11/2026</span></div>
+          </div>
+        </div>
+        <div class="cert">
+          <span class="pill purple">Persona Jurídica</span>
+          <hr>
+          <div class="kv">
+            <div style="align-items:flex-start"><span>Razón Social</span><span style="flex:1">Cervecería y Maltería Quilmes Sociedad Anónima Industrial Comercial Agrícola y Ganadera</span></div>
+            <div><span>Cargo</span><span style="width:92px">Tesorera</span></div>
+            <div><span>Nro de serie</span><span>3244geghth67787</span></div>
+            <div><span>Fecha de Vencimiento</span><span style="width:92px">06/11/2026</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+const FIRMAS = [
+  ['Contrato de Alquiler','17/03/26 · 14:32','Maria Gonzalez','32456789','Persona Física','error','Error en firma'],
+  ['Acuerdo de Confidencialidad','17/03/26 · 13:58','Juan Perez','2087345614','Persona Jurídica','ok','Firmado'],
+  ['Factura de Servicios','16/03/26 · 18:21','Laura Martinez','41203667','Persona Física','warn','Por firmar'],
+  ['Contrato de Prestación de Servicios','12/03/26 · 16:45','Carlos Ramirez','2758912047','Persona Física','warn','Por firmar'],
+  ['Acta de Asamblea','10/03/26 · 09:12','Ana Jimenez','28734102','Persona Física','warn','Por firmar'],
+  ['Poder Pedro Ramírez','16/03/26 · 18:21','Claudia Vega','23412036679','Persona Física','warn','Por firmar'],
+  ['Poder Andrés López','12/03/26 · 16:45','Ricardo Torres','35891204','Persona Física','warn','Por firmar'],
+  ['Poder Mauricio','10/03/26 · 09:12','Patricia Ortiz','20324567893','Persona Física','warn','Por firmar'],
+  ['Poder Mauricio Fernández','10/03/26 · 03:12','Jorge Ruiz','44012358','Persona Física','warn','Por firmar'],
+];
+function ypfHTML(){
+  const rows = FIRMAS.map(([doc,date,name,cuit,cert,st,stLabel])=>`<div class="tbl-row td">
+      <div><span class="ell">000000</span></div>
+      <div><span class="ell">${doc}</span></div>
+      <div>${date}</div><div>${name}</div><div>${cuit}</div><div>${cert}</div>
+      <div><span class="status ${st}">${stLabel}</span></div>
+      <div><button class="btn-pill">Mostrar detalles</button></div>
+    </div>`).join('');
+  return `<div class="page-head">
+      <h1>Firmas</h1>
+      <div class="input-box white"><img src="${asset('ic-download.svg')}" alt=""><p>Exportar CSV</p></div>
+    </div>
+    <div class="card firmas-card">
+      <div class="fc-body">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="filters">
+            <div class="search"><img src="${asset('ic-search.svg')}" alt=""><p>Buscar</p></div>
+            <div class="right">
+              <div class="input-box"><img src="${asset('ic-calendar.svg')}" alt=""><p>Seleccionar fecha</p></div>
+              <div class="input-box"><p>Estado</p><img src="${asset('ic-arrow-down.svg')}" alt=""></div>
+              <div class="input-box"><p>Certificado</p><img src="${asset('ic-arrow-down.svg')}" alt=""></div>
+              <div class="input-box"><img src="${asset('ic-settings.svg')}" alt=""></div>
+            </div>
+          </div>
+          <div class="tbl-scroll" id="tblScroll">
+            <div class="tbl ypf-tbl">
+              <div class="tbl-row th"><div>Custom ID</div><div>Nombre del documento</div><div>Fecha de firma</div><div>Nombre</div><div>CUIL/CUIT</div><div>Certificado</div><div>Estado</div><div>Acciones</div></div>
+              ${rows}
+            </div>
+          </div>
+        </div>
+        <div class="hscroll"><i id="hThumb"></i></div>
+      </div>
+      <div class="pagination">
+        <p class="count">1-17 of 2,000 resultados</p>
+        <div class="pg">
+          <div class="grp"><button class="pg-btn" aria-label="Primera página"><img src="${asset('caret-dbl-left.svg')}" alt=""></button><button class="pg-btn" aria-label="Anterior"><img src="${asset('caret-left.svg')}" alt=""></button></div>
+          <div class="grp"><button class="pg-btn num">1</button><button class="pg-btn num">2</button><button class="pg-btn num">3</button><button class="pg-btn num">4</button><span class="pg-btn dots">...</span><button class="pg-btn num">17</button></div>
+          <div class="grp"><button class="pg-btn" aria-label="Siguiente"><img src="${asset('caret-right.svg')}" alt=""></button><button class="pg-btn" aria-label="Última página"><img src="${asset('caret-dbl-right.svg')}" alt=""></button></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ---------- Skeletons de contenido (misma geometría que el destino) ---------- */
+function skRows(n, cols){
+  let r='';
+  for(let i=0;i<n;i++){
+    r += `<div class="sk-row" style="height:${cols.h}px">${cols.w.map((w,j)=>`<div class="sk sk-line" style="width:${w}px;${j===cols.w.length-1&&cols.lastPill?'height:22px;border-radius:999px':''}"></div>`).join('')}</div>`;
+  }
+  return r;
+}
+function personalSkeletonHTML(){
+  const quick = `<div class="quick" style="box-shadow:none;border-color:var(--stroke);cursor:progress"><div class="q"><div class="sk" style="width:24px;height:24px"></div><div style="display:flex;flex-direction:column;gap:6px"><div class="sk sk-line" style="width:120px"></div><div class="sk sk-line" style="width:84px"></div></div></div></div>`;
+  return `<div class="dash-row">
+    <div class="dash-left">
+      <div class="dash-top">
+        <div class="card sign-card" style="height:189px;align-items:center;justify-content:center">
+          <div class="sk" style="width:32px;height:32px"></div>
+          <div class="sk sk-line" style="width:150px;height:14px;margin-top:4px"></div>
+          <div class="sk sk-line" style="width:240px"></div>
+          <div class="sk" style="width:312px;height:43px;border-radius:50px;margin-top:12px"></div>
+        </div>
+        <div class="quick-grid">
+          <div class="quick-row">${quick}${quick}</div>
+          <div class="quick-row">${quick}<div class="quick empty"></div></div>
+        </div>
+      </div>
+      <div class="card hist">
+        <div class="card-head"><div class="ch-text"><div class="sk sk-line" style="width:150px;height:14px"></div><div class="sk sk-line" style="width:90px;margin-top:4px"></div></div><div class="sk" style="width:104px;height:34px;border-radius:999px"></div></div>
+        <div class="tbl">
+          <div class="sk-row" style="background:var(--bg-subtle);height:49px"><div class="sk sk-line" style="width:130px;background:#e4e7eb"></div></div>
+          ${skRows(7,{h:54,w:[150,110,260],lastPill:true})}
+        </div>
+      </div>
+    </div>
+    <div class="col3">
+      <div class="card" style="height:187px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:10px;align-items:center"><div class="sk" style="width:24px;height:24px"></div><div class="sk sk-line" style="width:140px;height:14px"></div></div>
+        <div class="sk" style="height:77px;border-radius:12px"></div>
+        <div style="display:flex;justify-content:space-between"><div class="sk sk-line" style="width:120px"></div><div class="sk sk-line" style="width:90px"></div></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px;border-color:var(--gray-100)">
+        <div style="display:flex;gap:10px;align-items:center"><div class="sk" style="width:24px;height:24px"></div><div class="sk sk-line" style="width:120px;height:14px;flex:1"></div><div class="sk" style="width:104px;height:34px;border-radius:999px"></div></div>
+        <div class="sk" style="height:132px;border-radius:16px"></div>
+        <div class="sk" style="height:180px;border-radius:16px"></div>
+      </div>
+    </div>
+  </div>`;
+}
+function ypfSkeletonHTML(){
+  return `<div class="page-head" style="align-items:center">
+      <div style="flex:1"><div class="sk" style="width:120px;height:28px"></div></div>
+      <div class="sk" style="width:153px;height:44px;border-radius:8px"></div>
+    </div>
+    <div class="card firmas-card">
+      <div class="fc-body">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="filters">
+            <div class="sk" style="width:374px;height:46px;border-radius:8px"></div>
+            <div class="right">
+              <div class="sk" style="width:183px;height:44px;border-radius:8px"></div>
+              <div class="sk" style="width:110px;height:44px;border-radius:8px"></div>
+              <div class="sk" style="width:139px;height:44px;border-radius:8px"></div>
+              <div class="sk" style="width:56px;height:44px;border-radius:8px"></div>
+            </div>
+          </div>
+          <div class="tbl">
+            <div class="sk-row" style="background:var(--bg-subtle);height:48px">${[60,130,90,60,70,80,50].map(w=>`<div class="sk sk-line" style="width:${w}px;background:#e4e7eb"></div>`).join('<div style="flex:1"></div>')}</div>
+            ${Array.from({length:9}).map(()=>`<div class="sk-row" style="height:62px">${[56,180,110,100,80,96].map(w=>`<div class="sk sk-line" style="width:${w}px"></div>`).join('<div style="flex:1"></div>')}<div style="flex:1"></div><div class="sk" style="width:96px;height:29px;border-radius:999px"></div></div>`).join('')}
+          </div>
+        </div>
+        <div class="sk" style="height:6px;border-radius:8px"></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;width:574px;justify-content:center">
+        <div class="sk sk-line" style="width:150px;margin-right:20px"></div>
+        ${Array.from({length:9}).map(()=>`<div class="sk" style="width:33px;height:33px;border-radius:4px"></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+/* ---------- Menús ---------- */
+function accountsHTML(){
+  return ORDER.map(id=>{
+    const ws = WORKSPACES[id], on = id===current;
+    return `<div class="acc${on?' active':''}" role="menuitemradio" aria-checked="${on}" tabindex="0" data-ws="${id}">
+      <div class="team-img"><img src="${ws.img}" alt=""></div>
+      <div class="ws-text"><span class="ws-name">${esc(ws.name)}</span><span class="ws-role">${esc(ws.role)}</span></div>
+      <div class="radio"><img src="${asset(on?'radio-on.svg':'radio-off.svg')}" alt=""></div>
+    </div>`;
+  }).join('');
+}
+function renderMenus(){
+  $('#wsMenu').innerHTML = `<div class="m-div-50"></div>
+    <div class="m-section">
+      <p class="m-title">Cambiar espacio de trabajo </p>
+      <div class="m-div"></div>
+      <div class="acc-list">${accountsHTML()}</div>
+    </div>
+    <div class="m-div"></div>`;
+  $('#userMenu').innerHTML = `<div class="um-top">
+      <div class="avatar56">EF</div>
+      <p class="um-name">Elena Fisher</p>
+    </div>
+    <div class="m-div-50"></div>
+    <div class="um-section">
+      <p class="m-over">Espacio de trabajo</p>
+      <div class="acc-list">${accountsHTML()}</div>
+    </div>
+    <div class="m-div"></div>
+    <div class="um-foot"><button class="btn-outline">Cerrar sesión</button></div>
+    <div class="m-div-50"></div>`;
+}
+
+let openMenu = null;
+function toggleMenu(id, force, viaKeyboard){
+  const el = document.getElementById(id);
+  const willOpen = force ?? !el.classList.contains('open');
+  closeMenus();
+  if(!willOpen || switching) return;
+  el.classList.add('open');
+  openMenu = id;
+  (id==='wsMenu' ? $('#teamSelector') : $('#userBtn'))?.setAttribute('aria-expanded','true');
+  if(viaKeyboard) el.querySelector('.acc.active')?.focus({preventScroll:true});
+}
+function closeMenus(){
+  document.querySelectorAll('.menu.open').forEach(m=>m.classList.remove('open'));
+  $('#teamSelector').setAttribute('aria-expanded','false');
+  $('#userBtn')?.setAttribute('aria-expanded','false');
+  openMenu = null;
+}
+
+/* ---------- Render completo ---------- */
+function render(){
+  const ws = WORKSPACES[current];
+  const ts = $('#teamSelector');
+  ts.classList.toggle('r-sm', ws.selectorRadius==='sm');
+  ts.classList.remove('loading');
+  ts.innerHTML = teamSelectorHTML(ws,false);
+  ts.setAttribute('aria-label', `Espacio de trabajo: ${ws.name}, ${ws.role}`);
+  $('#nav').innerHTML = navHTML(ws);
+  $('#navBar').innerHTML = navBarHTML(ws);
+  $('#feed').innerHTML = current==='personal' ? personalHTML() : ypfHTML();
+  renderMenus();
+  bindDynamic();
+}
+function bindDynamic(){
+  const u = $('#userBtn');
+  if(u){
+    u.onclick = e => { e.stopPropagation(); toggleMenu('userMenu'); };
+    u.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleMenu('userMenu', undefined, true); } };
+  }
+  const sc = $('#tblScroll'), th = $('#hThumb');
+  if(sc && th){
+    const track = th.parentElement;
+    const sync = () => {
+      const max = sc.scrollWidth - sc.clientWidth;
+      const tw = track.clientWidth;
+      const w = 55;
+      th.style.transform = `translateX(${max>0 ? (sc.scrollLeft/max)*(tw-w) : 0}px)`;
+    };
+    sc.addEventListener('scroll', sync, {passive:true});
+    sync();
+  }
+}
+
+/* ---------- Cambio de espacio de trabajo ---------- */
+function spinnerSVG(size){
+  return `<svg class="spinner" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" stroke="var(--brand-50)" stroke-width="3"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke="var(--brand-500)" stroke-width="3" stroke-linecap="round"/></svg>`;
+}
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+
+async function switchWorkspace(target){
+  if(switching || target===current) { closeMenus(); return; }
+  switching = true;
+  const ws = WORKSPACES[target];
+
+  // 1. Marca la selección en el menú y lo cierra
+  document.querySelectorAll('.menu .acc').forEach(a=>{
+    const on = a.dataset.ws===target;
+    a.classList.toggle('active',on);
+    a.setAttribute('aria-checked',on);
+    a.querySelector('.radio img').src = asset(on?'radio-on.svg':'radio-off.svg');
+  });
+  await wait(160);
+  closeMenus();
+
+  // 2. Selector muestra el destino + spinner; barra de progreso
+  const ts = $('#teamSelector');
+  ts.classList.toggle('r-sm', ws.selectorRadius==='sm');
+  ts.classList.add('loading');
+  ts.innerHTML = teamSelectorHTML(ws,true);
+  const bar = $('#topProgress');
+  bar.classList.remove('done'); void bar.offsetWidth; bar.classList.add('run');
+
+  // 3. Fade-out del contenido actual → skeletons con la geometría del destino
+  const parts = ['#nav','#navBar','#feed'].map(s=>$(s));
+  parts.forEach(p=>{ p.classList.remove('fade-in'); p.classList.add('fade-out'); });
+  await wait(200);
+  $('#nav').innerHTML = navSkeletonHTML(ws);
+  $('#navBar').innerHTML = navBarSkeletonHTML(ws);
+  $('#feed').innerHTML = target==='personal' ? personalSkeletonHTML() : ypfSkeletonHTML();
+  parts.forEach(p=>{ p.classList.remove('fade-out'); p.classList.add('fade-in'); });
+
+  const toast = $('#loadingToast');
+  toast.innerHTML = `${spinnerSVG(24)}
+    <div class="lt-team"><img src="${ws.img}" alt=""></div>
+    <div><p class="lt-title">Cambiando a ${esc(ws.name)}</p><p class="lt-sub">Cargando espacio de trabajo…</p></div>`;
+  toast.classList.add('show');
+
+  const ms = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--switch-ms'));
+  await wait(ms);
+
+  // 4. Espacio cargado
+  toast.classList.remove('show');
+  bar.classList.remove('run'); bar.classList.add('done');
+  parts.forEach(p=>{ p.classList.remove('fade-in'); p.classList.add('fade-out'); });
+  await wait(160);
+  current = target;
+  render();
+  parts.forEach(p=>{ p.classList.remove('fade-out'); void p.offsetWidth; p.classList.add('fade-in'); });
+  switching = false;
+}
+
+/* ---------- Eventos ---------- */
+$('#teamSelector').addEventListener('click', e=>{ e.stopPropagation(); toggleMenu('wsMenu', undefined, e.detail===0); });
+document.addEventListener('click', e=>{
+  const acc = e.target.closest('.acc');
+  if(acc){ e.stopPropagation(); switchWorkspace(acc.dataset.ws); return; }
+  if(!e.target.closest('.menu')) closeMenus();
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && openMenu){
+    const back = openMenu==='wsMenu' ? $('#teamSelector') : $('#userBtn');
+    closeMenus(); back?.focus();
+  }
+  const acc = e.target.closest?.('.acc');
+  if(acc && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); switchWorkspace(acc.dataset.ws); }
+  if(acc && (e.key==='ArrowDown'||e.key==='ArrowUp')){
+    e.preventDefault();
+    const list=[...acc.parentElement.querySelectorAll('.acc')];
+    const i=list.indexOf(acc)+(e.key==='ArrowDown'?1:-1);
+    list[(i+list.length)%list.length].focus();
+  }
+});
+
+/* ---------- Escala para pantallas < 1440px ---------- */
+function fit(){
+  const app = $('#app');
+  const s = Math.min(1, window.innerWidth/1440);
+  app.style.zoom = s;
+  app.style.minHeight = Math.max(1095, window.innerHeight/s)+'px';
+}
+window.addEventListener('resize', fit);
+fit();
+
+/* ---------- Deep-links para demo: #ypf, #menu-espacios, #menu-usuario, #cambiar (combinables con +) ---------- */
+const flags = location.hash.slice(1).split('+');
+if(flags.includes('ypf')) current = 'ypf';
+render();
+if(flags.includes('menu-espacios')) toggleMenu('wsMenu', true);
+if(flags.includes('menu-usuario')) toggleMenu('userMenu', true);
+if(flags.includes('cambiar')) setTimeout(()=>switchWorkspace(current==='ypf'?'personal':'ypf'), 300);
+</script>
+</body>
+</html>
